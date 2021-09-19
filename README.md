@@ -37,3 +37,5 @@ This app can be viewed and used at:
 
 - https://codecademy-spotify-app.surge.sh
 - https://codecademy-spotify-app.netlify.app
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/bf5ac743-c0b6-479a-a772-197bd214ee03/deploy-status)](https://app.netlify.com/sites/codecademy-spotify-app/deploys)
