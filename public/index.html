@@ -10,6 +10,10 @@
       content="Web site created using create-react-app"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="stylesheet" href="./reset.css" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Work+Sans:wght@300;500&display=swap" rel="stylesheet">
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -24,9 +28,9 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Jammming</title>
   </head>
-  <body>
+  <body onload="checkAccessToken()">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
@@ -39,5 +43,33 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+
+      function checkAccessToken() {
+        if(window.location.href.match(/access_token=([^&]*)/)) { //if there is an access_token parameter in the URL
+          let accessTokenMatch = window.location.href.match(/access_token=([^&]*)/); //find the access_token parameter
+          let expiresInMatch = window.location.href.match(/expires_in=([^&]*)/); //find the expires_in parameter
+          let accessToken = accessTokenMatch[1]; //set the page accessToken appropriately
+          localStorage.setItem("accessToken", accessToken); //save the accessToken to localStorage
+          window.history.pushState('Access Token', null, '/'); //remove the 'Access Token' from the URL
+          const expiresIn = Number(expiresInMatch[1]); //set expiresIn to the number of seconds returned in the expiresIn URL parameter
+          window.setTimeout(() => {
+            localStorage.removeItem("accessToken"); //remove the accessToken from localStorage
+            document.getElementsByClassName("AuthenticateButton")[0].removeAttribute("disabled"); //enable the 'AUTHENTICATE' <button> and...
+            document.getElementsByClassName("SearchButton")[0].setAttribute("disabled", "true"); //disable the 'SEARCH' <button> and...
+            document.getElementsByClassName("Playlist-save")[0].setAttribute("disabled", "true"); //disable the 'SAVE TO SPOTIFY' <button>
+          }, expiresIn * 1000); //in expiresIn milliseconds
+          document.getElementsByClassName("AuthenticateButton")[0].setAttribute("disabled", "true"); //disable the 'AUTHENTICATE' <button> and...
+          document.getElementsByClassName("SearchButton")[0].removeAttribute("disabled"); //enable the 'SEARCH' <button> and...
+          document.getElementsByClassName("Playlist-save")[0].removeAttribute("disabled"); //enable the 'SAVE TO SPOTIFY' <button>
+        } else { //if there is no access_token parameter in the URL
+          document.getElementsByClassName("SearchButton")[0].setAttribute("disabled", "true"); //disable the 'SEARCH' <button> and...
+          document.getElementsByClassName("Playlist-save")[0].setAttribute("disabled", "true"); //disable the 'SAVE TO SPOTIFY' <button>
+          if(localStorage.getItem("accessToken")) { //if there is an accessToken in localStorage
+            localStorage.removeItem("accessToken"); //delete the accessToken
+          }
+        }
+      }
+    </script>
   </body>
 </html>
